@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import List from './components/List';
+import Search from "./components/Search";
 
 function App() {
 
@@ -23,18 +24,17 @@ function App() {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const handleSearch = event => {
+    console.log(event.target.value)
+  };
 
-  const handleChange = event => {
-    setSearchTerm(event.target.value)
-  }
+  
 
   return (
     <div className="App">
       <h1> My Hacker Stories</h1>
-      <label htmlFor="search">Search: </label>
-      <input id='search' type="text" onChange={handleChange} />
-      <p>Searching for  <strong>{searchTerm}</strong></p>
+
+      <Search onSearch={handleSearch} />      
 
       <hr />
 
