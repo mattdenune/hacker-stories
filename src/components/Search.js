@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 
-const Search = ({onSearch}) => {
+const Search = ({search, onSearch}) => {
 
 	return (
     <div>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={onSearch} />
+      <input 
+				id="search" 
+				type="text" 
+				value={search}
+				onChange={onSearch} 
+			/>
     </div>
   );
 }
