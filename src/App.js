@@ -16,7 +16,7 @@ const useSemiPersistentState = (key, initialState) => {
 
 function App() {
 
-  const stories = [
+  const initialStories = [
     {
       title: "React",
       url: "https://reactjs.org/",
@@ -37,6 +37,13 @@ function App() {
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState('Search', 'React');
   
+  const [stories, setStories] = useState(initialStories)
+
+  const handleRemoveStory = (objectID) => {
+    const newStories = stories.filter((story) => objectID !== story.objectID);
+
+    setStories(newStories);
+  };
 
   const handleSearch = event => {
     setSearchTerm(event.target.value)
@@ -64,7 +71,7 @@ function App() {
 
       <hr />
 
-      <List list={searchedStories} />
+      <List list={searchedStories} onRemoveItem={handleRemoveStory} />
     </div>
   );
 }
