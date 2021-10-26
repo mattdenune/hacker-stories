@@ -2,14 +2,14 @@ import React from 'react';
 
 const InputWithLabel = ({ 
 	id, 
-	label, 
 	value, 
 	type = 'text',
 	onInputChange, 
+	children
 }) => {
   return (
     <>
-      <label htmlFor={id}>{label} </label>
+      <label htmlFor={id}>{children} </label>
       &nbsp;
       <input 
 				id={id} 
