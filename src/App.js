@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import List from './components/List';
 import Search from "./components/Search";
@@ -24,7 +24,7 @@ function App() {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = useState("React");
+  const [searchTerm, setSearchTerm] = useState(localStorage.getItem('search') || "React");
 
   const handleSearch = event => {
     setSearchTerm(event.target.value)
@@ -33,6 +33,10 @@ function App() {
   const searchedStories = stories.filter( story => 
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    localStorage.setItem('search', searchTerm)
+  }, [searchTerm])
 
   return (
     <div className="App">
