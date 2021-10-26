@@ -3,6 +3,17 @@ import React, { useState, useEffect } from "react";
 import List from './components/List';
 import Search from "./components/Search";
 
+const useSemiPersistentState = (key, initialState) => {
+  const [value, setValue] = useState(
+    localStorage.getItem(key) || initialState );
+
+  useEffect(() => {
+    localStorage.setItem(key, value);
+  }, [value, key]);
+
+  return [value, setValue]
+}
+
 function App() {
 
   const stories = [
@@ -24,7 +35,8 @@ function App() {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = useState(localStorage.getItem('search') || "React");
+  const [searchTerm, setSearchTerm] = useSemiPersistentState('Search', 'React');
+  
 
   const handleSearch = event => {
     setSearchTerm(event.target.value)
@@ -34,9 +46,6 @@ function App() {
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
-    localStorage.setItem('search', searchTerm)
-  }, [searchTerm])
 
   return (
     <div className="App">
