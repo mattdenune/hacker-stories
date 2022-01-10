@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer } from "react";
 import axios from 'axios'
 
 import List from './components/List';
-import InputWithLabel from "./components/InputWithLabel";
+import SearchForm from "./components/SearchForm";
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(
@@ -56,23 +56,20 @@ function App() {
   const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
   const [stories, dispatchStories] = useReducer(storiesReducer, { data: [], isLoading: false, isError: false });
 
-  const handleFetchStories = React.useCallback(() => {
-    if (!searchTerm) return;
-  
+  const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
+
+    try {
+      const result = await axios.get(url);
   
-    fetch(url)
-      .then(response => response.json())
-      .then(result => {
-        dispatchStories({
-          type: 'STORIES_FETCH_SUCCESS',
-          payload: result.hits,
-        });
-      })
-      .catch(() => 
-        dispatchStories({ type: 'STORIES_FETCH_FAILURE'})
-      );
-  }, [url]);
+          dispatchStories({
+            type: 'STORIES_FETCH_SUCCESS',
+            payload: result.data.hits,
+          });
+    } catch {
+      dispatchStories({ type: "STORIES_FETCH_FAILURE" });
+    }
+  },[url]);
 
 
   useEffect(() => {
@@ -90,31 +87,21 @@ function App() {
     setSearchTerm(event.target.value)
   };
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = event => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
+
+    event.preventDefault();
   }
 
   return (
     <div className="App">
       <h1> My Hacker Stories</h1>
 
-      <InputWithLabel 
-        id='search'
-        label='Search'
-        value={searchTerm} 
-        isFocused
-        onInputChange={handleSearchInput} 
-      >
-        <strong>Search:</strong>
-        
-      </InputWithLabel>
-
-      <button
-        type='button'
-        disabled={!searchTerm}
-        onClick={handleSearchSubmit}>
-        submit
-      </button>
+      <SearchForm 
+        searchTerm={searchTerm}
+        onSearchInput={handleSearchInput}
+        onSearchSubmit={handleSearchSubmit}
+      />
 
       <hr />
 
