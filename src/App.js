@@ -96,7 +96,7 @@ function App() {
 
   return (
     <div className={styles.container}>
-      <h1 classname={styles.headlinePrimary}>My Hacker Stories</h1>
+      <h1 className={styles.headlinePrimary}>My Hacker Stories</h1>
 
       <SearchForm 
         searchTerm={searchTerm}
