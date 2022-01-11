@@ -4,6 +4,7 @@ import Item from './Item';
 
 
 const List = ({ list, onRemoveItem }) =>
+	console.log('B: List') || 
   list.map((item) => (
 	<Item 
 		key={item.objectID} 

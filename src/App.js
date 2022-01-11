@@ -6,11 +6,17 @@ import SearchForm from "./components/SearchForm";
 import styles from  './style/App.module.css';
 
 const useSemiPersistentState = (key, initialState) => {
+  const isMounted = React.useRef(false);
+  
   const [value, setValue] = useState(
     localStorage.getItem(key) || initialState );
 
   useEffect(() => {
-    localStorage.setItem(key, value);
+    if ( !isMounted.current) {
+      isMounted.current = true;
+    } else {
+      localStorage.setItem(key, value);
+    }
   }, [value, key]);
 
   return [value, setValue]
@@ -93,6 +99,8 @@ function App() {
 
     event.preventDefault();
   }
+
+  console.log('B: App')
 
   return (
     <div className={styles.container}>
