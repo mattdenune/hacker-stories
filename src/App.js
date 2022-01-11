@@ -3,6 +3,7 @@ import axios from 'axios'
 
 import List from './components/List';
 import SearchForm from "./components/SearchForm";
+import styles from  './style/App.module.css';
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(
@@ -94,16 +95,14 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <h1> My Hacker Stories</h1>
+    <div className={styles.container}>
+      <h1 classname={styles.headlinePrimary}>My Hacker Stories</h1>
 
       <SearchForm 
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
       />
-
-      <hr />
 
       {stories.isError && <p>Something went wrong...</p>}
 

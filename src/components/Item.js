@@ -1,5 +1,7 @@
 import React from 'react';
 
+import styles from '../style/Item.module.css'
+
 const Item = ({ item, onRemoveItem }) => {
 
 	const handleRemoveItem = () => {
@@ -7,18 +9,16 @@ const Item = ({ item, onRemoveItem }) => {
 	};
 
 	return (
-    <div>
-      <span>
+    <div className={styles.item}>
+      <span style={{ width: "40%" }}>
         <a href={item.url}>{item.title}</a>
       </span>
-      <span>{item.author}</span>
-      <span>{item.num_comments}</span>
-      <span>{item.points}</span>
-			<button
-				type='button'
-				onClick={handleRemoveItem}>
-				Dismiss
-			</button>
+      <span style={{ width: "30%" }}>{item.author}</span>
+      <span style={{ width: "10%" }}>{item.num_comments}</span>
+      <span style={{ width: "10%" }}>{item.points}</span>
+      <button type="button" onClick={handleRemoveItem} className={`${styles.button} ${styles.bottonSmall}`}>
+        Dismiss
+      </button>
     </div>
   );
 }

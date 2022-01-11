@@ -1,0 +1,23 @@
+.searchForm {
+  padding: 10px 0 20px 0;
+  display: flex;
+  align-items: baseline;
+}
+
+.button {
+  background: transparent;
+  border: 1px solid #171212;
+  padding: 5px;
+  cursor: pointer;
+
+  transition: all 0.1s ease-in;
+}
+
+.button:hover {
+  background: #171212;
+  color: #ffffff;
+}
+
+.buttonLarge {
+  padding: 10px;
+}
