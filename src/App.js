@@ -55,6 +55,15 @@ const storiesReducer = (state, action) => {
   }
 };
 
+const getSumComments = stories => {
+  console.log('C');
+
+  return stories.data.reduce(
+    (result, value) => result + value.num_comments,
+    0
+  );
+};
+
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 function App() {
@@ -83,12 +92,12 @@ function App() {
     handleFetchStories();
   },[handleFetchStories]);
 
-  const handleRemoveStory = (item) => {
+  const handleRemoveStory = React.useCallback(item => {
     dispatchStories({
       type: 'REMOVE_STORY',
       payload: item,
     });
-  };
+  },[]);
 
   const handleSearchInput = event => {
     setSearchTerm(event.target.value)
@@ -102,9 +111,12 @@ function App() {
 
   console.log('B: App')
 
+  const sumComments = React.useMemo( () => 
+  getSumComments(stories),[stories]);
+
   return (
     <div className={styles.container}>
-      <h1 className={styles.headlinePrimary}>My Hacker Stories</h1>
+      <h1 className={styles.headlinePrimary}>My Hacker Stories with {sumComments} comments.</h1>
 
       <SearchForm 
         searchTerm={searchTerm}
