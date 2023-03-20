@@ -10,7 +10,7 @@ const Item = ({ item, onRemoveItem }) => {
 	};
 
 	return (
-    <div className={styles.item}>
+    <div className={styles.item} style={{display: 'flex'}}>
       <span style={{ width: "40%" }}>
         <a href={item.url}>{item.title}</a>
       </span>

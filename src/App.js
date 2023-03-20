@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer } from "react";
-import axios from 'axios'
+import axios from 'axios';
 
 import List from './components/List';
 import SearchForm from "./components/SearchForm";
@@ -15,6 +15,7 @@ const useSemiPersistentState = (key, initialState) => {
     if ( !isMounted.current) {
       isMounted.current = true;
     } else {
+      console.log("A")
       localStorage.setItem(key, value);
     }
   }, [value, key]);
@@ -56,7 +57,7 @@ const storiesReducer = (state, action) => {
 };
 
 const getSumComments = stories => {
-  console.log('C');
+  console.log('C: getComments()');
 
   return stories.data.reduce(
     (result, value) => result + value.num_comments,
@@ -74,14 +75,12 @@ function App() {
 
   const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
-
     try {
       const result = await axios.get(url);
-  
-          dispatchStories({
-            type: 'STORIES_FETCH_SUCCESS',
-            payload: result.data.hits,
-          });
+      dispatchStories({
+        type: 'STORIES_FETCH_SUCCESS',
+        payload: result.data.hits,
+      });
     } catch {
       dispatchStories({ type: "STORIES_FETCH_FAILURE" });
     }
@@ -110,10 +109,12 @@ function App() {
   }
 
   console.log('B: App')
-
+  
   const sumComments = React.useMemo( () => 
   getSumComments(stories),[stories]);
-
+  
+  // console.log("🚀 ~ file: App.js ~ line 133 ~ App ~ stories.data", stories.data)
+  
   return (
     <div className={styles.container}>
       <h1 className={styles.headlinePrimary}>My Hacker Stories with {sumComments} comments.</h1>
