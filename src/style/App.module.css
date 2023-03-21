@@ -2,8 +2,8 @@
   height: 100vh;
   padding: 20px;
 
-  background: #83a4d4; /* fallback for old browsers */
-  background: linear-gradient(to left, #b6fbff, #83a4d4);
+  /* background: #83a4d4; //fallback for old browsers
+  background: linear-gradient(to left, #b6fbff, #83a4d4); */
 
   color: #171212;
 }

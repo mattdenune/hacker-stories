@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import List from './components/List';
 import SearchForm from "./components/SearchForm";
+import LastSearches from './components/lastSearches'
 import styles from  './style/App.module.css';
 
 const useSemiPersistentState = (key, initialState) => {
@@ -30,27 +31,31 @@ const storiesReducer = (state, action) => {
         ...state,
         isLoading: true,
         isError: false,
-      }
+      };
     case 'STORIES_FETCH_SUCCESS':
       return {
         ...state,
         isLoading: false,
         isError: false,
-        data: action.payload,
-      }
+        data: 
+          action.payload.page === 0
+            ? action.payload.list
+            : state.data.concat(action.payload.list),
+        page: action.payload.page,
+      };
     case 'STORIES_FETCH_FAILURE':
       return {
         ...state,
         isLoading: false,
         isError: true,
-      }
+      };
     case 'REMOVE_STORY':
       return {
         ...state,
         data: state.data.filter(
           story => action.payload.objectID !== story.objectID
         ),
-      }
+      };
     default:
       throw new Error();
   }
@@ -65,7 +70,9 @@ const getSumComments = stories => {
   );
 };
 
-const getUrl = searchTerm => `${API_ENDPOINT}${searchTerm}`;
+const getUrl = (searchTerm, page) => 
+  `${API_BASE}${API_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`;
+
 
 const getLastSearches = urls => 
   urls
@@ -87,15 +94,21 @@ const getLastSearches = urls =>
     .slice(-6)
     .slice(0, -1)
 
-const extractSearchTerm = url => url.replace(API_ENDPOINT, "");
+const extractSearchTerm = url => 
+  url
+    .substring(url.lastIndexOf('?') + 1, url.lastIndexOf('&'))
+    .replace(PARAM_SEARCH, "");
 
-const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+const API_BASE = 'https://hn.algolia.com/api/v1';
+const API_SEARCH = '/search';
+const PARAM_SEARCH = 'query=';
+const PARAM_PAGE = 'page=';
 
 function App() {
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState('Search', 'React');
-  const [urls, setUrls] = React.useState([getUrl(searchTerm)]);
-  const [stories, dispatchStories] = useReducer(storiesReducer, { data: [], isLoading: false, isError: false });
+  const [urls, setUrls] = React.useState([getUrl(searchTerm, 0)]);
+  const [stories, dispatchStories] = useReducer(storiesReducer, { data: [], page: 0, isLoading: false, isError: false });
 
   const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
@@ -104,7 +117,10 @@ function App() {
       const result = await axios.get(lastUrl);
       dispatchStories({
         type: 'STORIES_FETCH_SUCCESS',
-        payload: result.data.hits,
+        payload: {
+          list: result.data.hits,
+          page: result.data.page,
+        },
       });
     } catch {
       dispatchStories({ type: "STORIES_FETCH_FAILURE" });
@@ -128,9 +144,7 @@ function App() {
   };
 
   const handleSearchSubmit = event => {
-    setSearchTerm(searchTerm);
-
-    handleSearch(searchTerm);
+    handleSearch(searchTerm, 0);
 
     event.preventDefault();
   }
@@ -141,17 +155,25 @@ function App() {
   getSumComments(stories),[stories]);
 
   const handleLastSearch = searchTerm => {
-    handleSearch(searchTerm);
+    setSearchTerm(searchTerm);
+
+    handleSearch(searchTerm, 0);
   };
 
-  const handleSearch = searchTerm => {
-    const url = getUrl(searchTerm);
+  const handleSearch = (searchTerm, page) => {
+    const url = getUrl(searchTerm, page);
     setUrls(urls.concat(url));
   }
 
   const lastSearches = getLastSearches(urls);
+
+  const handleMore = () => {
+    const lastUrl = urls[urls.length - 1];
+    const searchTerm = extractSearchTerm(lastUrl);
+    handleSearch(searchTerm, stories.page + 1);
+  }
   
-  // console.log("🚀 ~ file: App.js ~ line 133 ~ App ~ stories.data", stories.data)
+  console.log("🚀 ~ file: App.js ~ line 133 ~ App ~ stories.data", stories.data)
   
   return (
     <div className={styles.container}>
@@ -164,22 +186,23 @@ function App() {
         onSearchSubmit={handleSearchSubmit}
       />
       
-      {lastSearches.map((searchTerm, index) => (
-        <button 
-          key={searchTerm + index} 
-          type="button" 
-          onClick={() => handleLastSearch(searchTerm)}
-        >
-          {searchTerm}
-        </button>
-      ))}
+      <LastSearches
+        lastSearches={lastSearches}
+        onLastSearch={handleLastSearch}
+      />
       
       {stories.isError && <p>Something went wrong...</p>}
+
+      <List list={stories.data} onRemoveItem={handleRemoveStory} />
+      
       {stories.isLoading ? (
         <p>Loading...</p>
       ) : (
-        <List list={stories.data} onRemoveItem={handleRemoveStory} />
+        <button type='button' onClick={handleMore}>
+          More
+        </button>
       )}
+
     </div>
   );
 }
